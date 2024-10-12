@@ -1,3 +1,19 @@
+# Modified for easy testing
+
+All you need to do is:
+
+```bash
+# Build the docker image and install python packages
+BUILD=1 ./run.sh uv sync
+
+# Generate solutions using your own model
+...
+
+# Run evaluation
+./run.sh uv run python ./verilog_eval/evaluate_functional_correctness.py  data/example/ExampleSolution.jsonl --problem_file=./data/example/ExampleEval.jsonl
+```
+
+
 # VerilogEval: Evaluating Large Language Models for Verilog Code Generation 
 
 This is an evaluation harness for the VerilogEval problem solving dataset
