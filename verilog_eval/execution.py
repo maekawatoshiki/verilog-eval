@@ -62,30 +62,30 @@ def check_correctness(problem: Dict, completion: str, timeout: float,
                 f.write(verilog_test)
             
             try:
-# WARNING PLEASE READ
-# The following code use subprocess.Popen to run shell command with calls to iveriog and vvp.
-# Please check that iverilog and vvp are installed and included in your current run path.
-# For installation of Icarus Verilog, please refer to: https://github.com/steveicarus/iverilog
-# This program exists to execute untrusted model-generated code. Although
-# it is highly unlikely that model-generated code will do something overtly
-# malicious in response to this test suite, model-generated code may act
-# destructively due to a lack of model capability or alignment.
-# Users are strongly encouraged to sandbox this evaluation suite so that it 
-# does not perform destructive actions on their host or network. For more 
-# information on how OpenAI sandboxes its code, see the original OpenAI paper.
-# Once you have read this disclaimer and taken appropriate precautions, 
-# proceed at your own risk:
-# BEGIN CODE BLOCK
-"""
+                # WARNING PLEASE READ
+                # The following code use subprocess.Popen to run shell command with calls to iveriog and vvp.
+                # Please check that iverilog and vvp are installed and included in your current run path.
+                # For installation of Icarus Verilog, please refer to: https://github.com/steveicarus/iverilog
+                # This program exists to execute untrusted model-generated code. Although
+                # it is highly unlikely that model-generated code will do something overtly
+                # malicious in response to this test suite, model-generated code may act
+                # destructively due to a lack of model capability or alignment.
+                # Users are strongly encouraged to sandbox this evaluation suite so that it 
+                # does not perform destructive actions on their host or network. For more 
+                # information on how OpenAI sandboxes its code, see the original OpenAI paper.
+                # Once you have read this disclaimer and taken appropriate precautions, 
+                # proceed at your own risk:
+                # BEGIN CODE BLOCK
+
                 with swallow_io():
                     with time_limit(timeout):
                         cmd = "iverilog -Wall -Winfloop -Wno-timescale -g2012 \
                                     -s tb -o test.vvp {}.sv; vvp -n test.vvp".format(problem["task_id"])
                        
                         """
-                        adding timeout options for Popen. something breaks if not using timeout. seems to be working for now.
-                        not really sure if its the best/correct way. let me know if anyone has a better solution.
-                        https://stackoverflow.com/questions/1191374/using-module-subprocess-with-timeout
+                        # adding timeout options for Popen. something breaks if not using timeout. seems to be working for now.
+                        # not really sure if its the best/correct way. let me know if anyone has a better solution.
+                        # https://stackoverflow.com/questions/1191374/using-module-subprocess-with-timeout
                         """
                         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                         timer = Timer(timeout, p.kill)
@@ -109,8 +109,7 @@ def check_correctness(problem: Dict, completion: str, timeout: float,
                                 result.append(f"failed: {cor} out of {tot} samples.")
                         else:
                             result.append("failed: info string not matched.")
-"""
-# END CODE BLOCK
+
             except TimeoutException:
                 result.append("timed out")
             except BaseException as e:

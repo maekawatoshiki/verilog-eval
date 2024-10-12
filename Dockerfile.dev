@@ -1,0 +1,48 @@
+FROM nvidia/cuda:12.1.1-cudnn8-devel-ubuntu22.04
+ARG UID
+ARG GID
+ARG USER
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
+
+RUN set -x \
+	&& apt-get update \
+	&& DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+	ca-certificates tzdata sudo locales wget curl iptables supervisor \
+	autoconf gperf flex bison git \
+	&& apt-get clean \
+	&& update-alternatives --set iptables /usr/sbin/iptables-legacy \
+	&& rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/* \
+	&& ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime \
+	&& echo 'Asia/Tokyo' >/etc/timezone
+
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+RUN locale-gen en_US.UTF-8
+
+RUN set -x \
+	&& echo "${USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/ALL \
+	&& groupadd -o \
+	--gid ${GID} \
+	${USER} \
+	&& useradd \
+	--uid ${UID} \
+	--gid ${GID} \
+	--home-dir /home/${USER} \
+	--create-home \
+	--shell /bin/bash \
+	${USER} \
+	&& chown ${USER} -R /home/${USER}
+
+RUN git clone https://github.com/steveicarus/iverilog.git && cd iverilog \
+	&& git checkout 01441687235135d1c12eeef920f75d97995da333 \
+	&& sh ./autoconf.sh && ./configure && make -j \
+	&& make install
+
+USER ${USER}
+
+ENV PATH="/usr/local/cuda/bin:${PATH}"
+ENV LD_LIBRARY_PATH="/usr/local/cuda/lib64:$LD_LIBRARY_PATH"
+ENV CUDA_HOME="/usr/local/cuda"
+ENV HF_HOME="/hf_home"

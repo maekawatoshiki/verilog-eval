@@ -1,0 +1,27 @@
+[project]
+name = "verilog-eval"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+requires-python = "~=3.10"
+dependencies = [
+	"accelerate>=1.0.1",
+	"datasets>=3.0.1",
+	"evaluate>=0.4.3",
+	"fire>=0.7.0",
+	"jupyterlab>=3.6.8",
+	"numpy>=2.1.2",
+	"protobuf>=5.28.2",
+	"sentencepiece>=0.2.0",
+	"torch>=2.4.1",
+	"tqdm>=4.66.5",
+	"transformers>=4.45.2",
+]
+
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["*"]
